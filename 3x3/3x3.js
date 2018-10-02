@@ -7,7 +7,6 @@ for (i = 0; i < 9; i++)
 	blocks[i] = document.getElementById("block" + i);
 
 addBlockListeners();
-
 $('#save').on("click", saveFunc);
 
 // use jQuery to prevent default behavior (opening the file) and add the onDrop function
@@ -21,10 +20,10 @@ $('.gridBlock').contextmenu(function (e) {
 	img.fadeOut(200, function(e) { img.remove(); });
 });
 
-// drop image into place
+// drop image into place, from a file or direct online link
 function onDrop(e)
 {
-	let data = e.originalEvent.dataTransfer.files;
+	let data = e.originalEvent.dataTransfer.items;
 	let reader = new FileReader();
 	
 	if (data.length == 1)
@@ -32,17 +31,15 @@ function onDrop(e)
 		// not using ImageType here because the program should only allow still images
 		if (data[0].type == "image/png" || data[0].type == "image/jpeg" || data[0].type == "image/bmp")
 		{
-			console.log(currBlock);
-			
 			// create image element
 			let img = document.createElement("img");
 			img.classList.add("obj");
-			img.file = data[0];
+			img.file = data[0].getAsFile();
 			img.height = 200;
 			img.width = 200;
 			img.id = "img" + currBlock;
 			
-			// use FileReader to read image
+			// use FileReader to read image from file
 			reader.onload = (function(aImg) { 
 				return function(e) { 
 					aImg.src = e.target.result; 
@@ -55,16 +52,26 @@ function onDrop(e)
 			$('#block' + currBlock).append(img);
 			$('#img' + currBlock).hide().fadeIn(200);
 		}
-		
-		else
-			console.log(data[0].type);
 	}
 	
-	else
-		console.log("too many!");
-
+	else if (data.length == 3 && data[0].type == "text/plain" && data[1].type == "text/uri-list" && data[2].type == "text/html")
+	{
+		// create image element
+		let img = document.createElement("img");
+		img.classList.add("obj");
+		img.height = 200;
+		img.width = 200;
+		img.id = "img" + currBlock;
+		
+		// set image source to image url
+		data[0].getAsString(function(e) { img.src = e; });
+		
+		// fade in
+		$('#block' + currBlock).append(img);
+		$('#img' + currBlock).hide().fadeIn(200);
+	}
+		
 	e.originalEvent.dataTransfer.clearData();
-	console.log("File dropped");
 }
 
 // save the grid as a PNG
