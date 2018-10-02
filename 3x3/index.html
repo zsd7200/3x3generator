@@ -4,7 +4,8 @@
 <head>
 	<title>3x3 Collage Maker</title>
 	<meta charset="utf-8">
-
+	<link rel="icon" href="favicon.png" sizes="16x16 32x32 64x64 128x128" type="image/png">
+	
 	<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 	<script src="https://github.com/niklasvh/html2canvas/releases/download/v1.0.0-alpha.12/html2canvas.min.js"></script>
 	
@@ -43,9 +44,16 @@
 	<div class="flex-container" id="buttons">
 		<button type="button" id="save">Save Collage</button>
 	</div>
+	
+	<div id="footer">
+		<p>source code available on my <a href="https://github.com/zsd7200/3x3generator/">github</a></p>
+	</div>
+	
+	<input id="file-input" type="file" name="fileOpen" accept="image/png, image/jpeg, image/bmp" style="display: none;" />
+	
 </main>
 
-<script src="3x3.js"></script>
+	<script src="3x3.js"></script>
 
 </body>
 </html>

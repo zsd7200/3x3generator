@@ -6,12 +6,14 @@ let currBlock;
 for (i = 0; i < 9; i++)
 	blocks[i] = document.getElementById("block" + i);
 
+// add event listeners for save button and setting current block
 addBlockListeners();
 $('#save').on("click", saveFunc);
 
 // use jQuery to prevent default behavior (opening the file) and add the onDrop function
 $('.gridBlock').on("dragenter dragstart dragend dragleave dragover drag drop", function (e) {e.preventDefault(); e.stopPropagation();});
 $('.gridBlock').on("drop", onDrop);
+$('.gridBlock').on("click", onClick);
 
 // function to ade out/remove image once it's placed
 $('.gridBlock').contextmenu(function (e) {
@@ -24,36 +26,15 @@ $('.gridBlock').contextmenu(function (e) {
 function onDrop(e)
 {
 	let data = e.originalEvent.dataTransfer.items;
-	let reader = new FileReader();
 	
+	// handle drag and drop from local files
 	if (data.length == 1)
 	{
-		// not using ImageType here because the program should only allow still images
 		if (data[0].type == "image/png" || data[0].type == "image/jpeg" || data[0].type == "image/bmp")
-		{
-			// create image element
-			let img = document.createElement("img");
-			img.classList.add("obj");
-			img.file = data[0].getAsFile();
-			img.height = 200;
-			img.width = 200;
-			img.id = "img" + currBlock;
-			
-			// use FileReader to read image from file
-			reader.onload = (function(aImg) { 
-				return function(e) { 
-					aImg.src = e.target.result; 
-				}; 
-			})(img);
-			
-			reader.readAsDataURL(img.file);
-			
-			// fade in
-			$('#block' + currBlock).append(img);
-			$('#img' + currBlock).hide().fadeIn(200);
-		}
+			readImage(data[0].getAsFile());
 	}
 	
+	// handle drag and drop from another webpage
 	else if (data.length == 3 && data[0].type == "text/plain" && data[1].type == "text/uri-list" && data[2].type == "text/html")
 	{
 		// create image element
@@ -71,7 +52,47 @@ function onDrop(e)
 		$('#img' + currBlock).hide().fadeIn(200);
 	}
 		
+	// clear transfer data after displaying image
 	e.originalEvent.dataTransfer.clearData();
+}
+
+// handle file upload event
+function onClick(e)
+{
+	let input = $('#file-input').unbind().click()[0]; // unbind prevents change from being fired multiple times
+	$('#file-input').change(function() { readImage(input.files[0]); });
+}
+
+// helper function to read in an image
+function readImage(p)
+{
+	// check to make sure something was passed in
+	if (p)
+	{
+		// create filereader
+		let reader = new FileReader();
+	
+		// create image element
+		let img = document.createElement("img");
+		img.classList.add("obj");
+		img.file = p;
+		img.height = 200;
+		img.width = 200;
+		img.id = "img" + currBlock;
+		
+		// use FileReader to read image from file
+		reader.onload = (function(aImg) { 
+			return function(e) { 
+				aImg.src = e.target.result; 
+			}; 
+		})(img);
+			
+		reader.readAsDataURL(img.file);
+			
+		// fade in
+		$('#block' + currBlock).append(img);
+		$('#img' + currBlock).hide().fadeIn(200);	
+	}
 }
 
 // save the grid as a PNG
@@ -79,6 +100,7 @@ function saveFunc(e)
 {
 	// use html2canvas to convert the grid div to an image
 	html2canvas($('#grid')[0], { scale: 1 }).then(function(canvas) {
+		canvas.imageSmoothingEnabled = false;
 		let imgData = canvas.toDataURL();
 		
 		// create an "a" element containing grid.png and have it click itself
@@ -90,7 +112,7 @@ function saveFunc(e)
 	});
 }
 
-// a for loop does not work for setting these listeners
+// a for loop does not work for setting these listeners, so a helper function is required
 function addBlockListeners()
 {
 	// set current block for dragenter
@@ -114,4 +136,15 @@ function addBlockListeners()
 	blocks[6].addEventListener("contextmenu", function(event) { currBlock = 6; });
 	blocks[7].addEventListener("contextmenu", function(event) { currBlock = 7; });
 	blocks[8].addEventListener("contextmenu", function(event) { currBlock = 8; });
+	
+	// set current block for click
+	blocks[0].addEventListener("click", function(event) { currBlock = 0; });
+	blocks[1].addEventListener("click", function(event) { currBlock = 1; });
+	blocks[2].addEventListener("click", function(event) { currBlock = 2; });
+	blocks[3].addEventListener("click", function(event) { currBlock = 3; });
+	blocks[4].addEventListener("click", function(event) { currBlock = 4; });
+	blocks[5].addEventListener("click", function(event) { currBlock = 5; });
+	blocks[6].addEventListener("click", function(event) { currBlock = 6; });
+	blocks[7].addEventListener("click", function(event) { currBlock = 7; });
+	blocks[8].addEventListener("click", function(event) { currBlock = 8; });
 }
