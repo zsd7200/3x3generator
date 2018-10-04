@@ -1,4 +1,6 @@
 # 3x3 Collage Generator
+![License](https://img.shields.io/badge/License-GPLv3-blue.svg)
+
 Generates a 3x3 collage of images (bmp, png, and jpeg supported) via drag and drop or file uploading and saves it as a PNG.
 
 Live demo [available here](https://people.rit.edu/~zsd7200/3x3/).
